@@ -1,0 +1,84 @@
+---
+title: "Asignacion3"
+author: "Jesus Rincon"
+date: "10 de abril de 2016"
+output: html_document
+---
+
+#Instalamos librerias necesarias
+
+```{r}
+
+library(plot3D)
+
+```
+
+#Jambu
+Declaramos una funcion a usar, en la cual se ploteara el codo de Jambu
+
+```{r}
+jambu <- function(data, nc=15, seed=1234){
+  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+  for (i in 2:nc){
+    set.seed(seed)
+    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+  plot(1:nc, wss, type="b", xlab="Numero de Clusters",
+       ylab="Dentro de los grupos")}
+
+```
+
+#a.csv
+Cargamos los datos.
+```{r}
+a <- read.csv("a.csv", header = FALSE)
+a <- as.data.frame(a)
+a.plot <- subset(a, select = -c(V3))
+```
+Visualizamos el codo de Jambu asociado al dataset
+```{r}
+jambu(a)
+```
+##Kmeans en a.csv
+
+Como se obserba segun el Codo de Jambu se procede a ejecutar los codigos sabiendo
+que el optimo numero de clusters es 3 dado a que de ahi en adelante deja de ser 
+tan pronunciada la recta entre puntos de la curva
+
+```{r}
+a.kmeans <- kmeans(a.plot, centers = 3)
+plot(a.plot, col = a.kmeans$cluster)
+```
+###Matriz de confusion en Kmeans de a.csv
+
+```{r}
+MCk <- table(true = a$V3, pred = a.kmeans$cluster)
+MCk
+```
+##Cluster Jerarquico
+
+###Matriz de confusion con cluster y metodo Single
+
+```{r}
+a.single <- hclust(dist(as.matrix(a.plot)), method = "single")
+cortes.single <- cutree(a.single, k = 3)
+MCs <- table(true = a$V3, pred = cortes.single)
+MCs
+```
+
+###Matriz de confusion con cluster y metodo Complete
+
+```{r}
+a.complete <- hclust(dist(as.matrix(a.plot)), method = "complete")
+cortes.complete <- cutree(a.complete, k = 3)
+MCc <- table(true = a$V3, pred = cortes.complete)
+MCc
+```
+
+###Matriz de confusion con cluster y metodo Average
+
+```{r}
+a.average <- hclust(dist(as.matrix(a.plot)), method = "average")
+cortes.average <- cutree(a.average, k = 3)
+MCa <- table(true = a$V3, pred = cortes.average)
+MCa
+```
