@@ -1,0 +1,75 @@
+---
+title: "Asignacion3-A_big"
+author: "Jesus Rincon"
+date: "10 de abril de 2016"
+output: html_document
+---
+
+
+#a_big.csv
+
+Cargamos los datos y hacemos un sample de la data para poder sacar los centers de cada uno de los clusters y asi optimizar el proceso de calculo de los kmeans
+
+```{r}
+a_big <- read.csv("a_big.csv", header = FALSE)
+a_big <- as.data.frame(a_big)
+
+samp_size <- floor(0.05 * nrow(a_big))
+train_ind <- sample(seq_len(nrow(a_big)), size = samp_size)
+a_subseted<- a_big[train_ind,]
+```
+
+##Kmeans en a_big.csv
+Procedemos a sacar el codo de Jambu del sample calculado anteriormente
+```{r}
+jambu(a_subseted)
+```
+
+Como se observa, la mejor cantidad de cluster es 3 segun el grafico del codo de jambu
+por lo que procedemos a sacar los kmeans con centers = 3
+
+```{r}
+a_subseted.kmeans <- kmeans(a_subseted, centers = 3)
+```
+Ahora bien, agarramos los centroides y los pasamos a a_big
+Esto se hace para agilizar el calculo de los kmeans en un 
+dataset tan grande
+```{r}
+a_big.kmeans <- kmeans(a_big, centers = a_subseted.kmeans$centers )
+```
+#Matriz de confusion en kmeans de a_big.csv
+Procedemos a ver la efectividad del modelo planteado
+```{r}
+MCk <- table(true = a_big$V3, pred = a_big.kmeans$cluster)
+MCk
+```
+
+
+##Cluster Jerarquico en a_big.csv
+
+###Matriz de confusion con cluster y metodo Single
+
+```{r}
+a_big.single <- hclust(dist(as.matrix(a_subseted)), method = "single")
+cortes.a_big.single <- cutree(a_big.single, k = 3)
+
+MCs <- table(true = a_subseted$V3, pred = cortes.a_big.single)
+```
+
+###Matriz de confusion con cluster y metodo Complete
+
+```{r}
+a_big.complete <- hclust(dist(as.matrix(a_subseted)), method = "complete")
+cortes.a_big.complete <- cutree(a.complete, k = 3)
+
+MCc <- table(true = a_subseted$V3, pred = cortes.a_big.complete)
+```
+
+###Matriz de confusion con cluster y metodo Average
+
+```{r}
+a_big.average <- hclust(dist(as.matrix(a_subseted)), method = "average")
+cortes.a_big.average <- cutree(a.average, k = 3)
+
+MCa <- table(true = a_subseted$V3, pred = cortes.a_big.average)
+```

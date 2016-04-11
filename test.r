@@ -102,7 +102,6 @@ MCa <- table(true = a_subseted$V3, pred = cortes.a_big.average)
 
 guess <- read.csv("guess.csv", header = FALSE)
 guess <- as.data.frame(guess)
-#Como se observa en la grafica la mejor opcion es talfi
 plot(guess)
 jambu(guess)
 

@@ -54,7 +54,7 @@ plot(a.plot, col = a.kmeans$cluster)
 MCk <- table(true = a$V3, pred = a.kmeans$cluster)
 MCk
 ```
-##Cluster Jerarquico
+##Cluster Jerarquico en a_big.csv
 
 ###Matriz de confusion con cluster y metodo Single
 
@@ -82,3 +82,170 @@ cortes.average <- cutree(a.average, k = 3)
 MCa <- table(true = a$V3, pred = cortes.average)
 MCa
 ```
+
+
+#guess.csv
+
+cargamos los datos 
+
+```{r}
+guess <- read.csv("guess.csv", header = FALSE)
+guess <- as.data.frame(guess)
+```
+Procedemos a ver el codo de jambu respectivo
+```{r}
+jambu(guess)
+```
+#Kmeans en guess.csv
+```{r}
+guess.kmeans <- kmeans(guess, centers = 4)
+plot(guess, col = guess.kmeans$cluster)
+```
+
+##Cluster Jerarquico en a_big.csv
+
+###Matriz de confusion con cluster y metodo Single
+
+```{r}
+guess.single <- hclust(dist(as.matrix(guess)), method = "single")
+cortes.single <- cutree(guess.single, k = 4)
+```
+###Matriz de confusion con cluster y metodo Complete
+
+```{r}
+guess.complete <- hclust(dist(as.matrix(guess)), method = "complete")
+cortes.complete <- cutree(guess.complete, k = 4)
+```
+###Matriz de confusion con cluster y metodo Average
+
+```{r}
+guess.average <- hclust(dist(as.matrix(guess)), method = "average")
+cortes.complete <- cutree(guess.complete, k = 4)
+```
+
+#h.csv
+
+procedemos a cargar los datos 
+
+```{r}
+h <- read.csv("h.csv", header = FALSE)
+h <- as.data.frame(h)
+hclass <- as.data.frame(h$V4)
+```
+
+codo de Jambu
+
+```{r}
+jambu(h)
+```
+Como se observa, la curva comienza a dejar de ser pronunciada a partir del 4to cluster
+
+Ahora bien, al observar el dataset vemos que la columna referente a la case, no son numeros enteros. sino valores asociados a rangos
+
+Como la columna 4 se basa en rangos, predefinimos un rango para toda la columna.
+en los 4 quarters que definen la columna.
+
+```{r}
+summary(hclass)
+
+hclass[ hclass < 7.046] = 1
+hclass[ hclass < 9.386 & hclass >= 7.046 ] = 2
+hclass[ hclass < 11.661 & hclass >= 9.386 ] = 3
+hclass[ hclass >= 11.661] = 4
+points3D(x = h$V1, y = h$V2, z = h$V3)
+```
+
+##Kmeans en h.csv
+
+```{r}
+h.kmeans <- kmeans(h, centers = 4)
+MCk <- table(true = hclass, predict = h.kmeans$cluster)
+
+```
+
+##cluster jerarquico en h.csv
+
+###Metodo Single
+
+```{r}
+h.single <- hclust(dist(as.matrix(h)), method = "single")
+corte.h.single <- cutree(h.single, k = 4)
+MCs <- table( true = hclass, predict = corte.h.single)
+
+```
+
+###Metodo Complete
+
+```{r}
+h.complete <- hclust(dist(as.matrix(h)), method = "complete")
+corte.h.complete <- cutree(h.complete, k = 4)
+MCs <- table( true = hclass, predict = corte.h.complete)
+
+```
+
+###Metodo Average
+
+```{r}
+h.average <- hclust(dist(as.matrix(h)), method = "average")
+corte.h.average <- cutree(h.average, k = 4)
+MCs <- table( true = h$V4, predict = corte.h.average)
+
+```
+
+#moon.csv
+
+Cargamos los datos y le agregamos +1 a la clase dado que 0 es el color blanco
+
+```{r}
+moon <- read.csv("moon.csv", header = FALSE)
+moon <- as.data.frame(moon)
+moon$V3 = moon$V3 + 1
+```
+##Codo de jambu
+
+```{r}
+jambu(moon)
+```
+Como se observa, la curva comienza a perder pronunciacion con 4 clusters
+
+##kmeans en moon.csv
+
+```{r}
+moon.kmeans <- kmeans(moon, centers = 4)
+MCk <- table(true = moon$V3, pred = moon.kmeans$cluster)
+MCk
+```
+
+##Clasificacion jerarquica en moon.csv
+
+###Metodo single
+```{r}
+moon.single <- hclust(dist(as.matrix(moon)), method = "single")
+corte.moon.single <- cutree(moon.single, k = 4)
+MCs <- table(true = moon$V3, pred = corte.moon.single)
+MCs
+```
+
+###Metodo Complete
+
+```{r}
+moon.complete <- hclust(dist(as.matrix(moon)), method = "complete")
+corte.moon.complete <- cutree(moon.complete, k = 4)
+MCc <- table(true = moon$V3, pred = corte.moon.complete)
+MCc
+```
+
+###Metodo Average 
+
+```{r}
+moon.average <- hclust(dist(as.matrix(moon)), method = "average")
+corte.moon.average <- cutree(moon.average, k = 4)
+MCa <- table( true = moon$V3, pred = corte.moon.average)
+```
+
+
+#Conclusion
+
+Dependiendo de el dataset aportado para el analisis, existen distintos tipos de algoritmos que se pueden comportar de manera mas eficiente tanto a nivel de computo como a nivel de analisis visual.
+
+Por ende es importante saber que es lo que se desea obtener, para asi, filtrar los datos. y manejarlos de tal manera de encontrar la respuesta que se desea y asi poder hacerlo de la manera mas eficiente posible.
